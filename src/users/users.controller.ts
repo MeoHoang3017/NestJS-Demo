@@ -1,33 +1,23 @@
-/* eslint-disable prettier/prettier */
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { UsersService } from './users.service';
+import { User } from './users.schema';
 
 @Controller('users')
 export class UsersController {
-    constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly userService: UsersService) {}
 
-    @Get() // GET /users or /users?role=value
-    findAll(@Query('role') role?: 'INTERN' | 'ENGINEER' | 'ADMIN') {
-        return this.usersService.findAll(role)
-    }
+  @Post()
+  async create(@Body() user: User): Promise<User> {
+    return this.userService.create(user);
+  }
 
-    @Get(':id') // GET /users/:id
-    findOne(@Param('id') id: string) {
-        return this.usersService.findOne(+id)
-    }
+  @Get()
+  async findAll(): Promise<User[]> {
+    return this.userService.findAll();
+  }
 
-    @Post() // POST /users
-    create(@Body() user: { name: string, email: string, role: 'INTERN' | 'ENGINEER' | 'ADMIN' }) {
-        return this.usersService.create(user)
-    }
-
-    @Patch(':id') // PATCH /users/:id
-    update(@Param('id') id: string, @Body() userUpdate: { name?: string, email?: string, role?: 'INTERN' | 'ENGINEER' | 'ADMIN' }) {
-        return this.usersService.update(+id, userUpdate)
-    }
-
-    @Delete(':id') // DELETE /users/:id
-    delete(@Param('id') id: string) {
-        return this.usersService.delete(+id)
-    }
+  @Get(':email')
+  async findByEmail(@Param('email') email: string): Promise<User | null> {
+    return this.userService.findByEmail(email);
+  }
 }
